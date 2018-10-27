@@ -49,7 +49,7 @@ Sigma <- function(phi, alpha, nu, psis, landfrac, T.len = 15, N = 96) {
         mat[(N*(i-1)+1):(N*i), (N*(j-1)+1):(N*j)] <- apply(temps[,,1:i], 1:2, sum)
       } else { # j > i
         mat[(N*(i-1)+1):(N*i), (N*(j-1)+1):(N*j)] <- apply(temps[,,(j-i+1):j], 1:2, sum) 
-        mat[(N*(j-1)+1):(N*j), (N*(i-1)+1):(N*i)] <- t(apply(temps[,,(j-i+1):j], 1:2, sum))
+        mat[(N*(j-1)+1):(N*j), (N*(i-1)+1):(N*i)] <- apply(temps[,,(j-i+1):j], 1:2, sum)
       }
     }
   }
