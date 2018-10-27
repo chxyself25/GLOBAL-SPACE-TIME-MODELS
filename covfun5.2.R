@@ -31,16 +31,28 @@ Sigmas <- function(phi, alpha, nu, N = 96) {
 
 # function for calculating Sigma for a single latitude band
 # landfrac: a vector of length N including all land fractions in the latitude band
-Sigma <- function(phi, alpha, nu, landfrac, T.len = 15, N = 96) {
+# phi, alpha, and nu are parameters in spectral density
+# psis = c(psi0, psi1) (water and land coefficients)
+Sigma <- function(phi, alpha, nu, psis, landfrac, T.len = 15, N = 96) {
   sigmas <- Sigmas(phi = phi, alpha = alpha, nu = nu)
-  Psi <- diag(landfrac)
-  temp.mat <- matrix(0, ncol = T.len, nrow = T.len)
-  temp.mat[lower.tri(temp.mat)] <- unlist(lapply(1:(T.len-1), function(x) {rep(x, T.len-x)}))
-  temp.mat <- temp.mat + t(temp.mat)
-  diag(temp.mat) <- 1:T.len
-  mat <- kronecker(temp.mat, Psi%*%sigmas%*%Psi)
-  # the first block is Sigmas
-  mat[1:N, 1:N] <- sigmas
+  Psi <- diag(sapply(landfrac, function(x) {psis[x+1]}))
+  # considering speed, calculate these only once, but may have memory issue
+  temps <- array(NA, dim = c(N, N, T.len))
+  temps[,,1] <- sigmas
+  for (i in 2:T.len) {
+    temps[,,i] <- (Psi^(i-1)) %*% sigmas %*% (Psi^(i-1)) 
+  }
+  mat <- matrix(0, ncol = T.len*N, nrow = T.len*N)
+  for (i in 1:T.len) {
+    for (j in i:T.len) {
+      if(i == j) {
+        mat[(N*(i-1)+1):(N*i), (N*(j-1)+1):(N*j)] <- apply(temps[,,1:i], 1:2, sum)
+      } else { # j > i
+        mat[(N*(i-1)+1):(N*i), (N*(j-1)+1):(N*j)] <- apply(temps[,,(j-i+1):j], 1:2, sum) 
+        mat[(N*(j-1)+1):(N*j), (N*(i-1)+1):(N*i)] <- t(apply(temps[,,(j-i+1):j], 1:2, sum))
+      }
+    }
+  }
   return(mat)
 }
 
