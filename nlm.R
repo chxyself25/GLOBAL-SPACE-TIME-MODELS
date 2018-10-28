@@ -73,13 +73,8 @@ R05 <- readRDS("~/Documents/Iowa State/2018Fall/606/Project/Data/1870_20_2150_R0
 # D4=matrix(D1,1,prod(c(dim(D4)[1:3])))
 # D5=matrix(D1,1,prod(c(dim(D5)[1:3])))
 R01=R01[20,,];R02=R02[20,,];R03=R03[20,,];R04=R04[20,,];R05=R05[20,,]
-R_bar=mean(c(R01,R02,R03,R04,R05))
-D1=R01-R_bar;D2=R02-R_bar;D3=R03-R_bar;D4=R04-R_bar;D5=R05-R_bar
-D1=matrix(D1,1,prod(c(dim(D1)[1:2])))
-D2=matrix(D1,1,prod(c(dim(D2)[1:2])))
-D3=matrix(D1,1,prod(c(dim(D3)[1:2])))
-D4=matrix(D1,1,prod(c(dim(D4)[1:2])))
-D5=matrix(D1,1,prod(c(dim(D5)[1:2])))
+R_bar=(R01+R02+R03+R04+R05)/5
+D1=c(R01-R_bar);D2=c(R02-R_bar);D3=c(R03-R_bar);D4=c(R04-R_bar);D5=c(R05-R_bar)
 
 # T=15;N=96;M=1;R=5
 D=matrix(c(D1,D2,D3,D4,D5),1,5*dim(D1)[2])
