@@ -42,7 +42,8 @@ whole_func<-function(pars,landfrac_2=landfrac[20,], T.len = 15, N = 96, D = D_ma
   M=1
   R=5
   Sigma_mat<-Sigma(phi=phi_2, alpha=alpha_2, nu=nu_2, psis=psis_2, landfrac=landfrac_2, T.len = T.len, N = N)
-  A <- -0.5*(R-1)*log(det(Sigma_mat))
+  eigen_sigma <- svd(Sigma_mat)$d
+  A <- -0.5 * (R-1) * sum( log( eigen_sigma ) )
   B <- 0
   for (i in 1:R){
     B0 <- sum( D[,i] * c(solve(Sigma_mat)%*%D[,i]) )
@@ -53,12 +54,19 @@ whole_func<-function(pars,landfrac_2=landfrac[20,], T.len = 15, N = 96, D = D_ma
 }
 
 
-# try<-Sigma(phi=0.01, alpha=0.1, nu=0.5, psis=c(0.05,0.05), landfrac=landfrac[20,], T.len = 15, N = 96)
+# try<-Sigma(phi=0.01, alpha=0.1, nu=0.4, psis=c(0.05,0.05), landfrac=landfrac[20,], T.len = 15, N = 96)
 # try2<-solve(kronecker(diag(5),try))
 
-result<-nlm(whole_func, p=c(0.01, 0.01, 0.01, 0.05, 0.05) )
+result<-nlm(whole_func, p=c(0.01, 0.1, 0.4, 0.05, 0.05) )
 
 
 
 
+### test
+Sigma_mat_test <- Sigma(phi=0.01, alpha=0.01, nu=0.01, psis=c(0.05,0.05), 
+                        landfrac=landfrac[20,], T.len = 15, N = 96)
 
+svd_sig <- svd(Sigma_mat_test)
+svd_sig$d
+
+sum( log(svd_sig$d))
