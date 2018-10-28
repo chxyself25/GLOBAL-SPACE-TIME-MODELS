@@ -1,6 +1,8 @@
 # covariance function for section 5.2: single latitude
 # Sat Oct 27 11:23:01 2018 ------------------------------
 library(Matrix)
+library(doParallel)
+registerDoParallel(cores = 8)
 
 # covariance function for a single latitude band
 # N should be fixed at 96 all through the calculation
