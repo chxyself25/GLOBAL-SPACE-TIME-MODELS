@@ -1,7 +1,6 @@
 # covariance function for section 5.2: single latitude
 # Sat Oct 27 11:23:01 2018 ------------------------------
-library(dplyr)
-library(ggplot2)
+library(Matrix)
 
 # covariance function for a single latitude band
 # N should be fixed at 96 all through the calculation
@@ -33,6 +32,35 @@ Sigmas <- function(phi, alpha, nu, N = 96) {
 # landfrac: a vector of length N including all land fractions in the latitude band
 # phi, alpha, and nu are parameters in spectral density
 # psis = c(psi0, psi1) (water and land coefficients)
+Sigma <- function(phi, alpha, nu, psis, landfrac, T.len = 15, N = 96) {
+  sigmas <- Sigmas(phi = phi, alpha = alpha, nu = nu)
+  Psi <- diag(sapply(landfrac, function(x) {psis[x+1]}))
+  # considering speed, calculate these only once, but may have memory 
+  temps <- array(NA, dim = c(N, N, T.len))
+  temps[,,1] <- sigmas
+  for (i in 2:T.len) {
+    temps[,,i] <- (Psi^(i-1)) %*% sigmas %*% (Psi^(i-1)) 
+  }
+  mat <- foreach(i = 1:T.len, .combine = 'rbind') %dopar% {
+    res <- matrix(0, ncol = T.len*N, nrow = N)
+    if (i != T.len) {
+      for (j in (i+1):T.len) { # j > i
+        res[, (N*(j-1)+1):(N*j)] <- apply(temps[,,(j-i+1):j], 1:2, sum)
+      }
+    }
+    res
+  }
+  mat <- mat+t(mat)
+  mat <- mat + as.matrix(bdiag(foreach(i = 1:T.len) %dopar% {
+    apply(temps[,,1:i], 1:2, sum)
+  }))
+  return(mat)
+}
+
+
+################################################################
+###################old version: slow############################
+################################################################
 Sigma <- function(phi, alpha, nu, psis, landfrac, T.len = 15, N = 96) {
   sigmas <- Sigmas(phi = phi, alpha = alpha, nu = nu)
   Psi <- diag(sapply(landfrac, function(x) {psis[x+1]}))
