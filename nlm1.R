@@ -57,9 +57,9 @@ whole_func<-function(pars,landfrac_2=landfrac[20,], T.len = 15, N = 96, D = D_ma
 # try<-Sigma(phi=0.01, alpha=0.1, nu=0.4, psis=c(0.05,0.05), landfrac=landfrac[20,], T.len = 15, N = 96)
 # try2<-solve(kronecker(diag(5),try))
 
-result<-nlm(whole_func, p=c(0.01, 0.1, 0.4, 0.05, 0.05) )
-
-
+nlmeControl(msTol = 1e-04) # 1e-07 by default
+result<-nlm(whole_func, p=c(0.01, 0.1, 0.4, 0.05, 0.05), print.level = 2, gradtol = 1e-04)
+## optim does not work better than nlm
 
 
 ### test
