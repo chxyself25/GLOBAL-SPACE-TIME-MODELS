@@ -129,6 +129,9 @@ cppFunction(code=code_inv_sympd, depends="RcppArmadillo")
 
 
 
+
+
+
 reml_neglik_single <- function(pars,landfrac1=landfrac[20,], 
                             T.len = 15, N = 96, R = 5, D = D_mat){
   phi1=pars[1]
@@ -138,7 +141,7 @@ reml_neglik_single <- function(pars,landfrac1=landfrac[20,],
 
   Sigma_mat<-Sigma_fft(phi=phi1, alpha=alpha1, nu=nu1, psis=psis1, 
                        landfrac=landfrac1, T.len = T.len, N = N)
-  eigen_sigma <- svd(Sigma_mat)$d
+  eigen_sigma <- eigen(Sigma_mat, symmetric = TRUE)$values
   A <- -0.5 * (R-1) * sum( log( eigen_sigma ) )
   B <- 0
   inv_Sigma <- inv_sympd(Sigma_mat)
@@ -162,7 +165,10 @@ reml_neglik_single( c(0.5, 0.01, 0.04, 0.02, 0.08), landfrac1=landfrac[20,],
                                T.len = 15, N = 96, R = 5, D = D_mat)
 
 
-
+system.time(
+  reml_neglik_single( c(0.5, 0.01, 0.04, 0.02, 0.08), landfrac1=landfrac[20,], 
+                      T.len = 15, N = 96, R = 5, D = D_mat)
+)
 
 
 
