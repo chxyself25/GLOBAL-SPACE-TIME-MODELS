@@ -88,10 +88,10 @@ MSigmas_fft <- function(phis, alphas, nus, xi, tau) {
     })
   }
   # cross spectral densities
-  lagm <- 3.71*pi/180
+  lagm <- 3.71#*pi/180
   pho_c <- foreach(d = 1:(M-1), .combine = "rbind") %do% {
     sapply(0:(N-1), function(c) {
-      (xi/(1 + 4*(sin(c/N*pi))^2)^tau)^(d*lagm)
+      (xi/((1 + 4*(sin(c/N*pi))^2)^tau))^(d*lagm)
     })
   }
   # cosine functions
@@ -224,7 +224,7 @@ reml_neglik_multiple <- function(pars, T.len = 21, fix.pars, R, landfrac) {
   psis=pars[1:2] # psi0 and psi1
   #psis <- c(0.0002632907, 0.005489152)
   xi <- pars[3]
-  tau <- log(pars[4], 5) # input is 5^tau
+  tau <- log(pars[4], base = 5) # input is 5^tau
   # psis <- c(0.0001,0.0001)
   # xi <- 0.9; tau <- 0.2
   cat("paras = ", pars, ", \t")
