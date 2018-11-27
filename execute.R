@@ -23,13 +23,19 @@ result <- constrOptim(theta = c(0.1,0.1, 0.9,1.4), reml_neglik_multiple,
                       T.len = 21, fix.pars = fix.pars, R = R, landfrac = landfraction,
                       method = "Nelder-Mead", ui = ui.mat, ci = c(0,0,0, -1,0), outer.eps = 1e-04, hessian = FALSE)
 
+saveRDS(result, file = "./multiple_bands_result.rds")
+
 ## maybe later for standard deviation: hessian matrix
 par.est <- result$par
 library(numDeriv)
 xc <- hessian(reml_neglik_multiple, x = par.est, method="Richardson",
         T.len = 21, fix.pars = fix.pars, R = R, landfrac = landfrac)
 
-
+# xx <- seq(0.21, 1.5, length.out = 50)
+# reml <- c()
+# for (x in xx) {
+#   reml <- c(reml, reml_neglik_multiple(c(0.1,0.1,0.2,x), T.len = 21, fix.pars = fix.pars, R = R, landfrac = landfraction))
+# }
 
 
 
